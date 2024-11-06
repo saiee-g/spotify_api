@@ -15,6 +15,7 @@ def create_track(track_name:str, album_id:int, db: Session=Depends(get_db)):
     db.add(track)
     db.commit()
     db.refresh(track)
+    return {"message": "Track created successfully"}
 
 @track_router.get("/tracks/")
 def get_all_tracks(db:Session=Depends(get_db)):

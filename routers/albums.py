@@ -16,6 +16,7 @@ def create_album(album_name:str, artist_id:int, db: Session=Depends(get_db)):
     db.add(album)
     db.commit()
     db.refresh(album)
+    return {"message": "Album created successfully"}
 
 @album_router.get("/albums/")
 def get_all_albums(db:Session=Depends(get_db)):
