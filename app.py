@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from spotify.config import engine, Base
 from spotify.routers.users import user_router
 from spotify.routers.artists import artist_router
+from spotify.routers.albums import album_router
+from spotify.routers.tracks import track_router
 
 app = FastAPI()
 
@@ -9,6 +11,8 @@ Base.metadata.create_all(engine)
 
 app.include_router(user_router)
 app.include_router(artist_router)
+app.include_router(album_router)
+app.include_router(track_router)
 
 if __name__ == "__main__":
     import uvicorn

@@ -73,4 +73,4 @@ def delete_user(user_id:int, db:Session=Depends(get_db)):
     db.delete(user_to_delete)
     db.commit()
 
-    return {"message": "User info deleted successfully"}
+    return {"message": "User deleted successfully"}

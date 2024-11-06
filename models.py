@@ -40,7 +40,7 @@ class Artist(Base):
 class Album(Base):
     __tablename__ = "albums"
     album_id = Column(Integer, primary_key=True, autoincrement=True)
-    track_name = Column(String(200))
+    album_name = Column(String(200))
     artist_id = Column(Integer, ForeignKey("artists.artist_id"))
 
     album_to_artist = relationship("Artist", back_populates="artist_to_album")
