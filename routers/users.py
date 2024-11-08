@@ -7,7 +7,7 @@ from passlib.hash import bcrypt
 user_router = APIRouter()
 
 @user_router.post("/register/")
-def create_user(user_name:str, user_email:str, user_pass:str, role:str, db:Session=Depends(get_db)):
+def create_user(user_name:str, user_email:str, user_pass:str, role:str|None = None, db:Session=Depends(get_db)):
     existing_user = db.query(User).filter(User.user_email == user_email).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")

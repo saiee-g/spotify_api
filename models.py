@@ -21,7 +21,7 @@ class User(Base):
     user_name = Column(String(50))
     user_email = Column(String(50), unique=True)
     user_pass = Column(String)
-    role = Column(String(10), default="user", nullable=False)
+    role = Column(String(10), default="user")
 
     followed_artists = relationship("Artist", secondary=followers_table, back_populates="followers")
     liked_tracks = relationship("Track", secondary=likes_table, back_populates="liked_by_user")
