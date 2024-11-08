@@ -1,13 +1,16 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from spotify.config import get_db
-from spotify.models import User, Artist, followers_table
+from spotify.models import followers_table
+from spotify.dependencies import get_current_user
 
 follower_router = APIRouter()
 
 #Follow an artist
-@follower_router.post("/users/{user_id}/follow/{artist_id}/")
-def follow_artist(user_id:int, artist_id:int, db:Session=Depends(get_db)):
+@follower_router.post("/users/{user_id}/follow/{artist_id}/", dependencies=[Depends(get_current_user)])
+def follow_artist(user_id:int, artist_id:int, db:Session=Depends(get_db), current_user: dict = Depends(get_current_user)):
+    if int(current_user["user_id"]) != user_id:
+        raise HTTPException(status_code=403, detail="You do not have permission to access this information")
     existing_follower = db.execute(
         followers_table.select().where(
             (followers_table.c.user_id == user_id) & 
@@ -25,8 +28,10 @@ def follow_artist(user_id:int, artist_id:int, db:Session=Depends(get_db)):
     return {"message": "You now follow this artist"}
 
 #Unfollow an artist
-@follower_router.delete("/users/{user_id}/unfollow/{artist_id}/")
-def unfollow_artist(user_id: int, artist_id: int, db: Session = Depends(get_db)):
+@follower_router.delete("/users/{user_id}/unfollow/{artist_id}/", dependencies=[Depends(get_current_user)])
+def unfollow_artist(user_id: int, artist_id: int, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    if int(current_user["user_id"]) != user_id:
+        raise HTTPException(status_code=403, detail="You do not have permission to access this information")
     existing_follower = db.execute(
         followers_table.select().where(
             (followers_table.c.user_id == user_id) & 
@@ -47,8 +52,10 @@ def unfollow_artist(user_id: int, artist_id: int, db: Session = Depends(get_db))
     return {"message": "You unfollowed this artist"}
 
 #get all artists user follows
-@follower_router.get("/users/{user_id}/following/")
-def following(user_id:int, db:Session=Depends(get_db)):
+@follower_router.get("/users/{user_id}/following/", dependencies=[Depends(get_current_user)])
+def following(user_id:int, db:Session=Depends(get_db), current_user: dict = Depends(get_current_user)):
+    if int(current_user["user_id"]) != user_id:
+        raise HTTPException(status_code=403, detail="You do not have permission to access this information")
     following_list = db.execute(
         followers_table.select().where(
             (followers_table.c.user_id == user_id)

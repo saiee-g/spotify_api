@@ -10,7 +10,7 @@ user_router = APIRouter()
 
 
 @user_router.post("/register/")
-def create_user(user_name: str, user_email: str, user_pass: str, role: str = "user", db: Session = Depends(get_db)):
+def create_user(user_name: str, user_email: str, user_pass: str, role: str, db: Session = Depends(get_db)):
     existing_user = db.query(User).filter(User.user_email == user_email).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -37,7 +37,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@user_router.get("/users/{user_id}/")
+@user_router.get("/users/{user_id}/", dependencies=[Depends(get_current_user)])
 def get_user(user_id: int, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
 
     if int(current_user["user_id"]) != user_id:
@@ -49,7 +49,7 @@ def get_user(user_id: int, db: Session = Depends(get_db), current_user: dict = D
     return user
 
 
-@user_router.put("/users/{user_id}/")
+@user_router.put("/users/{user_id}/", dependencies=[Depends(get_current_user)])
 def update_user(user_id: int, user_name: str, user_email: str, user_pass: str, role: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     if int(current_user["user_id"]) != user_id:
         raise HTTPException(status_code=403, detail="You do not have permission to access this information")
@@ -71,7 +71,7 @@ def update_user(user_id: int, user_name: str, user_email: str, user_pass: str, r
     return {"message": "User information updated successfully"}
 
 
-@user_router.delete("/users/{user_id}/")
+@user_router.delete("/users/{user_id}/", dependencies=[Depends(get_current_user)])
 def delete_user(user_id: int, db: Session = Depends(get_db), current_user:dict=Depends(get_current_user)):
     
     if int(current_user["user_id"]) != user_id:
